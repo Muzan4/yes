@@ -1,0 +1,713 @@
+Complete .NET Core Practical Exam Guide
+This guide orders all required practicals chronologically (Practicals 1 to 8, and 10; Practical 9 removed), strips away unnecessary styling, and simplifies the C# and HTML code so it is as easy as possible to memorize for your exam.
+Practical 1: Console Applications (.NET Core)
+Steps to Set Up:
+Open Visual Studio 2019.
+Click Create a new project.
+Select Console App (.NET Core) (C#) and click Next.
+Give your project a name (e.g., Prac1) and click Create.
+Paste the code below inside Program.cs and press F5 (or click Run) to execute.
+1A. Even or Odd Checker
+using System;
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Console.Write("Enter a number: ");
+
+        int n = int.Parse(Console.ReadLine());
+
+        if (n % 2 == 0)
+
+            Console.WriteLine("Even");
+
+        else
+
+            Console.WriteLine("Odd");
+
+    }
+
+}
+1B. Temperature Converter (Celsius & Fahrenheit)
+using System;
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Console.Write("Enter Celsius: ");
+
+        int c = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Fahrenheit: " + ((c * 9 / 5) + 32));
+
+        Console.Write("Enter Fahrenheit: ");
+
+        int f = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Celsius: " + ((f - 32) * 5 / 9));
+
+    }
+
+}
+1C. Simple Calculator
+using System;
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Console.Write("Enter Number 1: ");
+
+        int a = int.Parse(Console.ReadLine());
+
+        Console.Write("Enter Number 2: ");
+
+        int b = int.Parse(Console.ReadLine());
+
+        Console.Write("Enter operator (+, -, *, /): ");
+
+        string op = Console.ReadLine();
+
+        switch (op)
+
+        {
+
+            case "+": Console.WriteLine("Result: " + (a + b)); break;
+
+            case "-": Console.WriteLine("Result: " + (a - b)); break;
+
+            case "*": Console.WriteLine("Result: " + (a * b)); break;
+
+            case "/": Console.WriteLine("Result: " + (a / b)); break;
+
+        }
+
+    }
+
+}
+Practical 2: Introduction to ASP.NET Core (Empty Project & Razor Page)
+Steps to Do It:
+Open Visual Studio -> Create a new project.
+Select ASP.NET Core Web Application -> Next.
+Name the project -> Select Empty template -> Click Create.
+In Solution Explorer (right side), right-click your project name -> Add -> New Item.
+Select Razor Page -> Click Add.
+Open Startup.cs to view the configuration and press F5 to run the project.
+Practical 3: Passing Model Data to View (Product List MVC)
+Steps to Do It:
+Create a new ASP.NET Core Web Application and select Web Application (Model-View-Controller).
+Create Model: Right-click the Models folder -> Add -> Class -> Name it Product.cs.
+Edit Controller: Open Controllers/HomeController.cs and update the Index() method to pass a list of products.
+Edit View: Open Views/Home/Index.cshtml and loop through the products using @foreach.
+Code:
+1. Models/Product.cs
+p
+namespace YourProjectName.Models
+{
+public class Product
+{
+public int Id { get; set; }
+public string Name { get; set; }
+public double Price { get; set; }
+}
+}
+
+### 2. Controllers/HomeController.cs
+
+```csharp
+
+using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Mvc;
+
+using YourProjectName.Models;
+
+public class HomeController : Controller
+
+{
+
+    public IActionResult Index()
+
+    {
+
+        var list = new List<Product>
+
+        {
+
+            new Product { Id = 1, Name = "Chair 1", Price = 500 },
+
+            new Product { Id = 2, Name = "Chair 2", Price = 1000 }
+
+        };
+
+        return View(list);
+
+    }
+
+}
+3. Views/Home/Index.cshtml
+@model IEnumerable<YourProjectName.Models.Product>
+
+<h2>Product List</h2>
+
+@foreach (var item in Model)
+
+{
+
+    <div>
+
+        <h4>@item.Name (ID: @item.Id)</h4>
+
+        <p>Price: Rs. @item.Price</p>
+
+        <hr />
+
+    </div>
+
+}
+Practical 4: Razor Views & Navigation in MVC
+Steps to Do It:
+Create an ASP.NET Core Web Application (Model-View-Controller).
+Right-click Views/Home folder -> Add -> View -> Select Razor View - Empty -> Name it Page1.cshtml.
+Repeat to add another view if needed (e.g., Page2.cshtml).
+Open Controllers/HomeController.cs and add action methods with the exact same names as your views:
+p
+public IActionResult Page1()
+{
+return View();
+}
+
+5. Open `Views/Home/Index.cshtml` (or `Views/Shared/_Layout.cshtml`) and add a simple link:
+
+```html
+
+<a href="/Home/Page1">Go to Page 1</a>
+Practical 5 & 6: Form Handling & Validation with Data Annotations
+(Note: All heavy CSS from the original practical has been removed for exam simplicity)
+Steps to Do It:
+Create an ASP.NET Core MVC project.
+Step 1 (Model): Right-click Models -> Add -> Class -> Name it Contact.cs.
+Step 2 (Controller): Right-click Controllers -> Add -> Controller -> MVC Controller - Empty -> Name it ContactController.cs.
+Step 3 (Views): Right-click Views -> Add -> New Folder named Contact.
+Right-click Views/Contact -> Add -> View -> Name it Index.cshtml.
+Right-click Views/Contact -> Add -> View -> Name it Thanks.cshtml.
+In Startup.cs, change {controller=Home} to {controller=Contact} at the bottom to make it the startup page.
+Code:
+1. Models/Contact.cs
+using System.ComponentModel.DataAnnotations;
+
+namespace YourProjectName.Models
+
+{
+
+    public class Contact
+
+    {
+
+        [Required(ErrorMessage = "Name is required")]
+
+        public string Name { get; set; }
+
+        [Required, EmailAddress(ErrorMessage = "Invalid Email")]
+
+        public string Email { get; set; }
+
+        [Required, StringLength(500)]
+
+        public string Message { get; set; }
+
+    }
+
+}
+2. Controllers/ContactController.cs
+using Microsoft.AspNetCore.Mvc;
+
+using YourProjectName.Models;
+
+namespace YourProjectName.Controllers
+
+{
+
+    public class ContactController : Controller
+
+    {
+
+        [HttpGet]
+
+        public IActionResult Index() => View();
+
+        [HttpPost]
+
+        public IActionResult Index(Contact form)
+
+        {
+
+            if (ModelState.IsValid)
+
+                return RedirectToAction("Thanks");
+
+            return View(form);
+
+        }
+
+        public IActionResult Thanks() => View();
+
+    }
+
+}
+3. Views/Contact/Index.cshtml
+@model YourProjectName.Models.Contact
+
+<h2>Contact Us</h2>
+
+<form asp-action="Index" method="post">
+
+    <div>
+
+        Name: <input asp-for="Name" />
+
+        <span asp-validation-for="Name" style="color:red"></span>
+
+    </div>
+
+    <br />
+
+    <div>
+
+        Email: <input asp-for="Email" />
+
+        <span asp-validation-for="Email" style="color:red"></span>
+
+    </div>
+
+    <br />
+
+    <div>
+
+        Message: <textarea asp-for="Message"></textarea>
+
+        <span asp-validation-for="Message" style="color:red"></span>
+
+    </div>
+
+    <br />
+
+    <button type="submit">Submit</button>
+
+</form>
+
+
+4. Views/Contact/Thanks.cshtml
+<h1>Data submitted, Thank you!</h1>
+Practical 7: Layouts and Partial Views (Login Partial)
+Steps to Do It:
+Create an ASP.NET Core Web Application (Model-View-Controller) project.
+Step 1 (Create Partial View): Right-click Views/Shared -> Add -> View -> Select Razor View - Empty -> Name it Login_partial.cshtml.
+Step 2 (Add to Layout): Open Views/Shared/_Layout.cshtml and add @await Html.PartialAsync("Login_partial") right below the closing </nav> tag (inside <header>).
+Step 3 (Create Login View): Right-click Views -> Add -> New Folder named Account. Right-click Views/Account -> Add -> View -> Name it Login.cshtml.
+Step 4 (Create Controller): Right-click Controllers -> Add -> Controller -> MVC Controller - Empty -> Name it AccountController.cs.
+Code:
+1. Views/Shared/Login_partial.cshtml
+@if (User.Identity.IsAuthenticated)
+
+{
+
+    <p>Welcome, @User.Identity.Name</p>
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+
+        <button type="submit">Logout</button>
+
+    </form>
+
+}
+
+else
+
+{
+
+    <a asp-controller="Account" asp-action="Login">Login</a>
+
+}
+2. Views/Shared/_Layout.cshtml
+(Add 1 line inside <header> right before </nav>)l	
+@await Html.PartialAsync("Login_partial")
+
+3. Views/Account/Login.cshtml
+
+```html
+
+<h2>Login</h2>
+
+<form asp-controller="Account" asp-action="Login" method="post">
+
+    Username: <input name="username" required /> <br /><br />
+
+    Password: <input name="password" type="password" required /> <br /><br />
+
+    <button type="submit">Login</button>
+
+</form>
+4. Controllers/AccountController.cs
+using Microsoft.AspNetCore.Mvc;
+
+namespace YourProjectName.Controllers
+
+{
+
+    public class AccountController : Controller
+
+    {
+
+        [HttpGet]
+
+        public IActionResult Login() => View();
+
+        [HttpPost]
+
+        public IActionResult Login(string username, string password)
+
+        {
+
+            if (username == "banana" && password == "ishika")
+
+                return RedirectToAction("Index", "Home");
+ 
+            return View();
+
+        }
+
+        [HttpPost]
+
+        public IActionResult Logout() => RedirectToAction("Index", "Home");
+
+    }
+
+}
+Practical 8: Session & TempData State Management
+Steps to Do It:
+Create an ASP.NET Core MVC project.
+Step 1 (Startup.cs): Enable Session in ConfigureServices and Configure.
+Step 2 (HomeController.cs): Add methods to Set, Get, and Clear Session and TempData.
+Step 3 (Views/Home/): Create the corresponding .cshtml views (SetSessionData, GetSessionData, SetTempData, GetTempData).
+Code:
+1. Startup.cs
+public void ConfigureServices(IServiceCollection services)
+
+{
+
+    services.AddSession(); // <-- ADD THIS
+
+    services.AddControllersWithViews();
+
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+
+{
+
+    app.UseStaticFiles();
+
+    app.UseRouting();
+
+    app.UseSession(); // <-- ADD THIS (Before UseEndpoints)
+
+    app.UseEndpoints(endpoints =>
+
+    {
+
+        endpoints.MapControllerRoute(
+
+            name: "default",
+
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    });
+
+}
+2. Controllers/HomeController.cs
+using Microsoft.AspNetCore.Http;
+
+using Microsoft.AspNetCore.Mvc;
+
+namespace YourProjectName.Controllers
+
+{
+
+    public class HomeController : Controller
+
+    {
+
+        public IActionResult Index() => View();
+
+        public IActionResult SetSessionData()
+
+        {
+
+            HttpContext.Session.SetString("Name", "Alex");
+
+            return View();
+
+        }
+
+        public IActionResult GetSessionData()
+
+        {
+
+            ViewBag.Msg = HttpContext.Session.GetString("Name") ?? "No Session Found";
+
+            return View();
+
+        }
+
+        public IActionResult ClearSession()
+
+        {
+
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("GetSessionData");
+
+        }
+
+        public IActionResult SetTempData()
+
+        {
+
+            TempData["Msg"] = "Temporary Message (Disappears on refresh!)";
+
+            return View();
+
+        }
+
+        public IActionResult GetTempData() => View();
+
+    }
+
+}
+3. Views inside Views/Home/
+Index.cshtml<h1>Session & TempData Demo</h1>
+
+<a href="/Home/SetSessionData">1. Set Session</a> 
+
+<a href="/Home/GetSessionData">2. Get Session</a> 
+
+<a href="/Home/SetTempData">3. Set TempData</a> 
+
+<a href="/Home/GetTempData">4. Get TempData</a>
+
+SetSessionData.cshtml<h2>Session Saved!</h2>
+
+<a href="/Home/GetSessionData">View Session</a>
+
+GetSessionData.cshtmll<h2>User: @ViewBag.Msg</h2>
+<a href="/Home/ClearSession">Clear Session</a>
+
+
+
+SetTempData.cshtml<h2>TempData Saved!</h2>
+
+<a href="/Home/GetTempData">View TempData</a>
+
+GetTempData.cshtml<h2>TempData: @TempData["Msg"]</h2>
+
+<p>Refresh the page to see it disappear!</p>
+Practical 10: Entity Framework Core & CRUD Operations (Scaffolding)
+Part A: Setting Up Database & Migrations
+Steps to Do It:
+Create an ASP.NET Core Web Application (MVC) named EFCoreDemo.
+Open Package Manager Console (Tools -> NuGet Package Manager -> Package Manager Console) and install EF Core packages:
+
+Install-Package Microsoft.EntityFrameworkCore -Version 3.0.0
+
+Install-Package Microsoft.EntityFrameworkCore.SqlServer -Version 3.0.0
+
+Install-Package Microsoft.EntityFrameworkCore.Tools -Version 3.0.0
+
+Install-Package Microsoft.EntityFrameworkCore.Design -Version 3.0.0
+
+Create Model: Right-click Models -> Add -> Class -> Student.cs.
+Create DbContext: Create a folder Data -> Right-click Data -> Add -> Class -> AppDbContext.cs.
+Add Connection String: Edit appsettings.json.
+Register DbContext: Edit Startup.cs.
+Run Migrations: In Package Manager Console, run:
+
+Add-Migration InitialCreate
+
+Update-Database
+Code:
+1. Models/Student.cs
+using System.ComponentModel.DataAnnotations;
+
+namespace EFCoreDemo.Models
+
+{
+
+    public class Student
+
+    {
+
+        [Key]
+
+        public int Id { get; set; }
+
+        [Required, StringLength(50)]
+
+        public string Name { get; set; }
+
+        [Range(18, 60)]
+
+        public int Age { get; set; }
+
+    }
+
+}
+2. Data/AppDbContext.cs
+using Microsoft.EntityFrameworkCore;
+
+using EFCoreDemo.Models;
+
+namespace EFCoreDemo.Data
+
+{
+
+    public class AppDbContext : DbContext
+
+    {
+
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Student> Students { get; set; }
+
+    }
+
+}
+3. appsettings.json
+{
+
+  "ConnectionStrings": {
+
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=EFCoreDemoDB;Trusted_Connection=True;"
+
+  },
+
+  "AllowedHosts": "*"
+
+}
+4. Startup.cs (Inside ConfigureServices)
+public void ConfigureServices(IServiceCollection services)
+
+{
+
+    services.AddDbContext<AppDbContext>(options =>
+
+        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+    services.AddControllersWithViews();
+
+}
+
+Or in program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// --- ADD YOUR DATABASE SERVICE HERE ---
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+Part B: Auto-Generating CRUD Operations (Scaffolding)
+(Visual Studio generates this code automatically.)
+Steps to Do It:
+Right-click the Controllers folder -> Add -> New Scaffolded Item...
+Select MVC Controller with views, using Entity Framework -> Click Add.
+Fill in the dialog box:
+Model class: Student (EFCoreDemo.Models)
+Data context class: AppDbContext (EFCoreDemo.Data)
+Controller name: StudentsController
+Click Add (Visual Studio will generate StudentsController.cs and all Create, Edit, Details, Delete, and Index views).
+Run the project and navigate to https://localhost:xxxx/Students in your browser to test Create, Read, Update, and Delete!
+
+
+
+Console :- 
+Prime numbers:-
+Source code:-
+
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int n, i;
+        bool prime = true;
+
+        Console.Write("Enter a number: ");
+        n = Convert.ToInt32(Console.ReadLine());
+
+        if (n <= 1)
+            prime = false;
+        else
+        {
+            for (i = 2; i <= Math.Sqrt(n); i++)
+            {
+                if (n % i == 0)
+                {
+                    prime = false;
+                    break;
+                }
+            }
+        }
+
+        if (prime)
+            Console.WriteLine("Prime Number");
+        else
+            Console.WriteLine("Not a Prime Number");
+
+        Console.ReadLine();
+    }
+}
+
+#factorial
+
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int n, i;
+        int fact = 1;
+
+        Console.Write("Enter a number: ");
+        n = Convert.ToInt32(Console.ReadLine());
+
+        for (i = 1; i <= n; i++)
+        {
+            fact = fact * i;
+        }
+
+        Console.WriteLine("Factorial = " + fact);
+        Console.ReadLine();
+    }
+}
+
+
+
