@@ -1,713 +1,398 @@
-Complete .NET Core Practical Exam Guide
-This guide orders all required practicals chronologically (Practicals 1 to 8, and 10; Practical 9 removed), strips away unnecessary styling, and simplifies the C# and HTML code so it is as easy as possible to memorize for your exam.
-Practical 1: Console Applications (.NET Core)
-Steps to Set Up:
-Open Visual Studio 2019.
-Click Create a new project.
-Select Console App (.NET Core) (C#) and click Next.
-Give your project a name (e.g., Prac1) and click Create.
-Paste the code below inside Program.cs and press F5 (or click Run) to execute.
-1A. Even or Odd Checker
-using System;
-
-class Program
-
-{
-
-    static void Main()
-
-    {
-
-        Console.Write("Enter a number: ");
-
-        int n = int.Parse(Console.ReadLine());
-
-        if (n % 2 == 0)
-
-            Console.WriteLine("Even");
-
-        else
-
-            Console.WriteLine("Odd");
-
-    }
-
-}
-1B. Temperature Converter (Celsius & Fahrenheit)
-using System;
-
-class Program
-
-{
-
-    static void Main()
-
-    {
-
-        Console.Write("Enter Celsius: ");
-
-        int c = int.Parse(Console.ReadLine());
-
-        Console.WriteLine("Fahrenheit: " + ((c * 9 / 5) + 32));
-
-        Console.Write("Enter Fahrenheit: ");
-
-        int f = int.Parse(Console.ReadLine());
-
-        Console.WriteLine("Celsius: " + ((f - 32) * 5 / 9));
-
-    }
-
-}
-1C. Simple Calculator
-using System;
-
-class Program
-
-{
-
-    static void Main()
-
-    {
-
-        Console.Write("Enter Number 1: ");
-
-        int a = int.Parse(Console.ReadLine());
-
-        Console.Write("Enter Number 2: ");
-
-        int b = int.Parse(Console.ReadLine());
-
-        Console.Write("Enter operator (+, -, *, /): ");
-
-        string op = Console.ReadLine();
-
-        switch (op)
-
-        {
-
-            case "+": Console.WriteLine("Result: " + (a + b)); break;
-
-            case "-": Console.WriteLine("Result: " + (a - b)); break;
-
-            case "*": Console.WriteLine("Result: " + (a * b)); break;
-
-            case "/": Console.WriteLine("Result: " + (a / b)); break;
-
-        }
-
-    }
-
-}
-Practical 2: Introduction to ASP.NET Core (Empty Project & Razor Page)
-Steps to Do It:
-Open Visual Studio -> Create a new project.
-Select ASP.NET Core Web Application -> Next.
-Name the project -> Select Empty template -> Click Create.
-In Solution Explorer (right side), right-click your project name -> Add -> New Item.
-Select Razor Page -> Click Add.
-Open Startup.cs to view the configuration and press F5 to run the project.
-Practical 3: Passing Model Data to View (Product List MVC)
-Steps to Do It:
-Create a new ASP.NET Core Web Application and select Web Application (Model-View-Controller).
-Create Model: Right-click the Models folder -> Add -> Class -> Name it Product.cs.
-Edit Controller: Open Controllers/HomeController.cs and update the Index() method to pass a list of products.
-Edit View: Open Views/Home/Index.cshtml and loop through the products using @foreach.
-Code:
-1. Models/Product.cs
-p
-namespace YourProjectName.Models
-{
-public class Product
-{
-public int Id { get; set; }
-public string Name { get; set; }
-public double Price { get; set; }
-}
-}
-
-### 2. Controllers/HomeController.cs
-
-```csharp
-
-using System.Collections.Generic;
-
-using Microsoft.AspNetCore.Mvc;
-
-using YourProjectName.Models;
-
-public class HomeController : Controller
-
-{
-
-    public IActionResult Index()
-
-    {
-
-        var list = new List<Product>
-
-        {
-
-            new Product { Id = 1, Name = "Chair 1", Price = 500 },
-
-            new Product { Id = 2, Name = "Chair 2", Price = 1000 }
-
-        };
-
-        return View(list);
-
-    }
-
-}
-3. Views/Home/Index.cshtml
-@model IEnumerable<YourProjectName.Models.Product>
-
-<h2>Product List</h2>
-
-@foreach (var item in Model)
-
-{
-
-    <div>
-
-        <h4>@item.Name (ID: @item.Id)</h4>
-
-        <p>Price: Rs. @item.Price</p>
-
-        <hr />
-
-    </div>
-
-}
-Practical 4: Razor Views & Navigation in MVC
-Steps to Do It:
-Create an ASP.NET Core Web Application (Model-View-Controller).
-Right-click Views/Home folder -> Add -> View -> Select Razor View - Empty -> Name it Page1.cshtml.
-Repeat to add another view if needed (e.g., Page2.cshtml).
-Open Controllers/HomeController.cs and add action methods with the exact same names as your views:
-p
-public IActionResult Page1()
-{
-return View();
-}
-
-5. Open `Views/Home/Index.cshtml` (or `Views/Shared/_Layout.cshtml`) and add a simple link:
-
-```html
-
-<a href="/Home/Page1">Go to Page 1</a>
-Practical 5 & 6: Form Handling & Validation with Data Annotations
-(Note: All heavy CSS from the original practical has been removed for exam simplicity)
-Steps to Do It:
-Create an ASP.NET Core MVC project.
-Step 1 (Model): Right-click Models -> Add -> Class -> Name it Contact.cs.
-Step 2 (Controller): Right-click Controllers -> Add -> Controller -> MVC Controller - Empty -> Name it ContactController.cs.
-Step 3 (Views): Right-click Views -> Add -> New Folder named Contact.
-Right-click Views/Contact -> Add -> View -> Name it Index.cshtml.
-Right-click Views/Contact -> Add -> View -> Name it Thanks.cshtml.
-In Startup.cs, change {controller=Home} to {controller=Contact} at the bottom to make it the startup page.
-Code:
-1. Models/Contact.cs
-using System.ComponentModel.DataAnnotations;
-
-namespace YourProjectName.Models
-
-{
-
-    public class Contact
-
-    {
-
-        [Required(ErrorMessage = "Name is required")]
-
-        public string Name { get; set; }
-
-        [Required, EmailAddress(ErrorMessage = "Invalid Email")]
-
-        public string Email { get; set; }
-
-        [Required, StringLength(500)]
-
-        public string Message { get; set; }
-
-    }
-
-}
-2. Controllers/ContactController.cs
-using Microsoft.AspNetCore.Mvc;
-
-using YourProjectName.Models;
-
-namespace YourProjectName.Controllers
-
-{
-
-    public class ContactController : Controller
-
-    {
-
-        [HttpGet]
-
-        public IActionResult Index() => View();
-
-        [HttpPost]
-
-        public IActionResult Index(Contact form)
-
-        {
-
-            if (ModelState.IsValid)
-
-                return RedirectToAction("Thanks");
-
-            return View(form);
-
-        }
-
-        public IActionResult Thanks() => View();
-
-    }
-
-}
-3. Views/Contact/Index.cshtml
-@model YourProjectName.Models.Contact
-
-<h2>Contact Us</h2>
-
-<form asp-action="Index" method="post">
-
-    <div>
-
-        Name: <input asp-for="Name" />
-
-        <span asp-validation-for="Name" style="color:red"></span>
-
-    </div>
-
-    <br />
-
-    <div>
-
-        Email: <input asp-for="Email" />
-
-        <span asp-validation-for="Email" style="color:red"></span>
-
-    </div>
-
-    <br />
-
-    <div>
-
-        Message: <textarea asp-for="Message"></textarea>
-
-        <span asp-validation-for="Message" style="color:red"></span>
-
-    </div>
-
-    <br />
-
-    <button type="submit">Submit</button>
-
-</form>
-
-
-4. Views/Contact/Thanks.cshtml
-<h1>Data submitted, Thank you!</h1>
-Practical 7: Layouts and Partial Views (Login Partial)
-Steps to Do It:
-Create an ASP.NET Core Web Application (Model-View-Controller) project.
-Step 1 (Create Partial View): Right-click Views/Shared -> Add -> View -> Select Razor View - Empty -> Name it Login_partial.cshtml.
-Step 2 (Add to Layout): Open Views/Shared/_Layout.cshtml and add @await Html.PartialAsync("Login_partial") right below the closing </nav> tag (inside <header>).
-Step 3 (Create Login View): Right-click Views -> Add -> New Folder named Account. Right-click Views/Account -> Add -> View -> Name it Login.cshtml.
-Step 4 (Create Controller): Right-click Controllers -> Add -> Controller -> MVC Controller - Empty -> Name it AccountController.cs.
-Code:
-1. Views/Shared/Login_partial.cshtml
-@if (User.Identity.IsAuthenticated)
-
-{
-
-    <p>Welcome, @User.Identity.Name</p>
-
-    <form asp-controller="Account" asp-action="Logout" method="post">
-
-        <button type="submit">Logout</button>
-
-    </form>
-
+Da ml prac praac
+import sklearn
+Sklearn.__all__
+\
+Prac 1,2,3 combined:
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+df = pd.read_csv("data.csv")
+df.columns = df.columns.str.strip().str.upper()
+
+# 1. Dates & Text Cleaning
+if "DOB" in df.columns:
+    df["DOB"] = pd.to_datetime(df["DOB"], errors="coerce").fillna("1900-01-01")
+
+cat_cols = df.select_dtypes(include=["object"]).columns
+df[cat_cols] = df[cat_cols].ffill().bfill().fillna("Unknown")
+
+# 2. Numeric: Coerce strings to NaN, remove negatives, cap outliers (IQR)
+num_cols = ["AGE", "MARKS", "PRICE", "QUANTITY", "DISCOUNT"]
+for col in num_cols:
+    s = pd.to_numeric(df[col], errors="coerce").mask(lambda x: x < 0)
+    q1, q3 = s.quantile(0.25), s.quantile(0.75)
+    df[col] = s.clip(q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)).fillna(s.median())
+
+# 3. Scaling
+for col in ["MARKS", "AGE", "PRICE"]:
+    df[f"{col}_MINMAX"] = MinMaxScaler().fit_transform(df[[col]]) 
+    df[f"{col}_ZSCORE"] = StandardScaler().fit_transform(df[[col]])
+
+# 4. Save
+df.dropna(how="all").to_csv("cleaned_data.csv", index=False)
+print(df.head())
+First 
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+df = pd.read_csv("data.csv")
+df.columns = df.columns.str.strip().str.upper()
+
+print("missing values :\n", df.isna().sum())
+print("rows with any missing value:\n", df[df.isna().any(axis=1)])
+
+# Impute values
+df["NAME"] = df["NAME"].fillna("unknown")
+df["CITY"] = df["CITY"].ffill().bfill()
+df["DOB"] = df["DOB"].fillna("1900-01-01")
+df["MARKS"] = pd.to_numeric(df["MARKS"], errors="coerce")
+df[“MARKS”] = df[“MARKS”]fillna(df["MARKS"].mean())
+
+# Scaling
+df["MARKSMINMAX"] = MinMaxScaler().fit_transform(df[["MARKS"]])
+df["MARKSZSCORE"] = StandardScaler().fit_transform(df[["MARKS"]])
+
+print(df["MARKS"].describe())
+
+df_any, df_all = df.dropna(how="any"), df.dropna(how="all")
+df.to_csv("cleaned.csv", index=False)
+
+Second
+import pandas as pd
+import matplotlib.pyplot as plt
+
+try:
+    df = pd.read_csv('noisy_data.csv')
+except Exception:
+    df = pd.DataFrame({
+        'Date': ['01-01-2023', '02-01-2023', '03-01-2023', '04-01-2023', '05-01-2023'],
+        'Product_ID': ['P1001', 'P1002', 'P1003', 'P1004', 'P1005'],
+        'Price': [25.99, 19.95, 12.49, 9.99, 150.0],
+        'Quantity': [5, 3, 8, 12, 1],
+        'Sales_Region': ['North', 'South', 'East', 'West', 'North'],
+        'Discount': ['0.1', '0.05', '0.15', '0.2', '0']
+    })
+
+df.columns = df.columns.str.strip()
+df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
+df['Discount'] = pd.to_numeric(df['Discount'], errors='coerce')
+
+# Boxplot BEFORE
+df['Price'].plot.box(title="Price Before Cleaning")
+plt.show()
+
+# IQR Outlier Removal
+def remove_outliers(col):
+    q1, q3 = col.quantile(0.25), col.quantile(0.75)
+    return col.where(col.between(q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)))
+
+df['Price'] = remove_outliers(df['Price'])
+df['Quantity'] = remove_outliers(df['Quantity'])
+
+# Handle Categorical Data & Fill Missing Values
+df = df[df['Sales_Region'].isin(['North', 'South', 'East', 'West'])]
+cols = ['Price', 'Quantity', 'Discount']
+df[cols] = df[cols].fillna(df[cols].median())
+
+# Export & Boxplot AFTER
+df.to_csv("cleaned_sales_data.csv", index=False)
+df['Price'].plot.box(title="Price After Cleaning")
+plt.show()
+
+print("Cleaned Data:\n", df)
+
+Third:
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+df = pd.read_csv("student-data.csv")
+print("Missing before:\n", df.isna().sum())
+
+# Dynamic Fill by column type
+cat_cols = df.select_dtypes(include=['object', 'string']).columns
+num_cols = df.select_dtypes(include='number').columns
+df[cat_cols] = df[cat_cols].ffill().bfill()
+df[num_cols] = df[num_cols].fillna(df[num_cols].mean())
+
+# Scaling
+df["age_minmax"] = MinMaxScaler().fit_transform(df[["age"]])
+df["age_zscore"] = StandardScaler().fit_transform(df[["age"]])
+
+# Outlier handling with IQR
+df["age"].plot.box(title="Age Before Outlier Removal")
+plt.show()
+
+q1, q3 = df["age"].quantile(0.25), df["age"].quantile(0.75)
+df["age"] = df["age"].where(df["age"].between(q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1))).fillna(df["age"].median())
+
+df["age"].plot.box(title="Age After Outlier Removal")
+plt.show()
+
+df_any, df_all = df.dropna(how='any'), df.dropna(how='all')
+df.to_csv("student-data-cleaned.csv", index=False)
+Fourth
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import chi2_contingency
+
+df = pd.read_csv("Suicide-rates-master.csv")
+
+# 1. Heatmap
+corr = df.select_dtypes(include='number').corr()
+print("Correlation Matrix:\n", corr)
+sns.heatmap(corr, annot=True)
+plt.title("Correlation Heatmap")
+plt.show()
+
+# 2. Chi-Square Test
+def run_chi2(data, col1, col2):
+    chi2, p, dof, _ = chi2_contingency(pd.crosstab(data[col1], data[col2]))
+    print(f"--- Chi-Square: {col1} vs {col2} ---")
+    print(f"Chi2: {chi2:.4f} | p-value: {p:.4f} | DoF: {dof}")
+    print("Conclusion:", "REJECT H0 (Dependent)" if p < 0.05 else "FAIL TO REJECT H0 (Independent)")
+
+run_chi2(df, "sex", "generation")
+
+Fifth:
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("Suicide-rates-master.csv")
+
+# 1. Statistics & Skewness
+for col in df.select_dtypes(include=np.number).columns:
+    mean, med, mode, skew = df[col].mean(), df[col].median(), df[col].mode()[0], df[col].skew()
+    interp = "Symmetric" if np.isclose(mean, med, atol=0.1) else ("Right-skewed" if skew > 0 else "Left-skewed")
+    print(f"{col} | Mean: {mean} | Med: {med} | Mode: {mode} | Skew: {skew} -> {interp}")
+
+# 2. Basic Plots
+df['sex'].value_counts().plot.bar(title='Bar - Gender'); 
+plt.show()
+df['suicides_no'].plot.hist(bins=20, title="Histogram"); 
+plt.show()
+df['suicides_no'].plot.box(title="Box Plot"); 
+plt.show()
+
+# Violin & Scatter
+plt.violinplot(df['suicides_no'].dropna());
+plt.title("Violin Plot"); 
+plt.show()
+df.plot.scatter(x='year', y='suicides_no', title="Scatter Plot"); 
+plt.show()
+
+# 3. Advanced Plots
+df.pivot_table(values='suicides_no', index='year', columns='sex', aggfunc='sum').plot.bar(stacked=True, title="Stacked Bar")
+plt.show()
+
+df.groupby('sex')['suicides_no'].sum().plot.pie(labels=['Female', 'Male'], autopct='%1.1f%%', title="Donut Chart")
+plt.gca().add_artist(plt.Circle((0, 0), 0.70, fc='white'))
+plt.show()
+
+Sixth
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import *
+
+# 1. Load Data (Outcome is already 0 and 1 in diabetes.csv!)
+df = pd.read_csv("diabetes.csv")
+X = df.drop(columns=['Outcome'])
+y = df['Outcome']
+
+# 2. Split, Fit & Predict
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+clf = DecisionTreeClassifier(random_state=42).fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+
+# 3. Print All Metrics Directly
+acc = accuracy_score(y_test, y_pred)
+print("Accuracy:", acc)
+print("Std Error:", ((acc * (1 - acc)) / len(y_test)) ** 0.5)
+print("Precision:", precision_score(y_test, y_pred))
+print("Sensitivity:", recall_score(y_test, y_pred))
+print("Specificity:", recall_score(y_test, y_pred, pos_label=0))
+print("AUC:", roc_auc_score(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# 4. Plot ROC Curve (1-Line Built-in Shortcut!)
+RocCurveDisplay.from_estimator(clf, X_test, y_test, plot_chance_level=True)
+plt.show()
+
+# 5. Plot Decision Tree
+plot_tree(clf, feature_names=X.columns, class_names=['0', '1'], filled=True, max_depth=3)
+plt.show()
+
+
+Seventh
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, roc_curve, auc
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC		
+# 1. Load Data & Split
+df = pd.read_csv("diabetes.csv")
+X = df.drop(columns=['Outcome'])
+y = df['Outcome']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 2. Models
+models = {
+    "DT": DecisionTreeClassifier(max_depth=3, random_state=42),
+    "RF": RandomForestClassifier(n_estimators=100, random_state=42),
+    "NB": GaussianNB(),
+    "LR": LogisticRegression(max_iter=1000),
+    "SVM": SVC(probability=True)
 }
 
-else
+# 3. Loop
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    y_prob = model.predict_proba(X_test)[:, 1]
+    
+    # Calculate All Metrics
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred, zero_division=0)
+    rec = recall_score(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+    spec = cm[0, 0] / (cm[0, 0] + cm[0, 1])
+    
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+    
+    # Unformatted Prints
+    print(name)
+    print("Accuracy:", acc)
+    print("Precision:", prec)
+    print("Recall:", rec)
+    print("Specificity:", spec)
+    print("AUC:", roc_auc)
+    print("Confusion Matrix:")
+    print(cm)
+    
+    plt.plot(fpr, tpr, label=name)
 
-{
+# 4. Plot
+plt.plot([0, 1], [0, 1], 'k--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve Comparison')
+plt.legend()
+plt.show()
 
-    <a asp-controller="Account" asp-action="Login">Login</a>
+Prac 9 
 
-}
-2. Views/Shared/_Layout.cshtml
-(Add 1 line inside <header> right before </nav>)l	
-@await Html.PartialAsync("Login_partial")
 
-3. Views/Account/Login.cshtml
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import dendrogram, linkage
 
-```html
+# 1. Load & Scale Data
+df = pd.read_csv("C:/Users/Admin/Downloads/Mall_Customers.csv")
+print(df.describe())
 
-<h2>Login</h2>
+X = df.drop(columns=['CustomerID', 'Gender'])
+X_scaled = StandardScaler().fit_transform(X)
 
-<form asp-controller="Account" asp-action="Login" method="post">
+# 2. Elbow Method
+wss = [KMeans(k, n_init=10, random_state=42).fit(X_scaled).inertia_ for k in range(1, 16)]
+plt.plot(range(1, 16), wss, marker='o')
+plt.title("Elbow Method")
+plt.show()
 
-    Username: <input name="username" required /> <br /><br />
+# 3. K-Means & PCA Plot
+km = KMeans(3, n_init=10, random_state=42).fit_predict(X_scaled)
+X_pca = PCA(2).fit_transform(X_scaled)
 
-    Password: <input name="password" type="password" required /> <br /><br />
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=km)
+plt.title("K-Means (PCA)")
+plt.show()
 
-    <button type="submit">Login</button>
+# 4. Dendrogram & Hierarchical Clustering
+dendrogram(linkage(X_scaled, method='ward'))
+plt.title("Dendrogram")
+plt.show()
 
-</form>
-4. Controllers/AccountController.cs
-using Microsoft.AspNetCore.Mvc;
+hc = AgglomerativeClustering(3).fit_predict(X_scaled)
 
-namespace YourProjectName.Controllers
+plt.scatter(X['Annual Income (k$)'], X['Spending Score (1-100)'], c=hc)
+plt.title("Hierarchical Clustering")
+plt.show()
 
-{
+# 5. Scores & Cluster Counts
+print("K-Means Silhouette:", silhouette_score(X_scaled, km))
+print("Hierarchical Silhouette:", silhouette_score(X_scaled, hc))
 
-    public class AccountController : Controller
+print("\nK-Means Counts:\n", pd.Series(km).value_counts())
+print("\nHierarchical Counts:\n", pd.Series(hc).value_counts())
 
-    {
 
-        [HttpGet]
+Prac 10
+import pandas as pd
+import matplotlib.pyplot as plt
+from mlxtend.frequent_patterns import apriori, association_rules
 
-        public IActionResult Login() => View();
+data = pd.read_csv("groceries.csv")
+basket = data["Items"].str.get_dummies(sep=", ").astype(bool)
 
-        [HttpPost]
+freq = apriori(basket, min_support=0.05, use_colnames=True)
+freq.nlargest(15, 'support').plot.bar(x='itemsets', y='support')
+plt.show()
 
-        public IActionResult Login(string username, string password)
+r = association_rules(freq, metric="lift", min_threshold=1.0)
 
-        {
+print(r[["antecedents", "consequents", "support", "confidence", "lift"]].head())
 
-            if (username == "banana" && password == "ishika")
 
-                return RedirectToAction("Index", "Home");
- 
-            return View();
 
-        }
 
-        [HttpPost]
+Prac 11
 
-        public IActionResult Logout() => RedirectToAction("Index", "Home");
+import pyfpgrowth, csv
 
-    }
+data = [[x for x in r if x] for r in csv.reader(open('Book1.csv'))][1:]
+print("Some records:", data[:10])
 
-}
-Practical 8: Session & TempData State Management
-Steps to Do It:
-Create an ASP.NET Core MVC project.
-Step 1 (Startup.cs): Enable Session in ConfigureServices and Configure.
-Step 2 (HomeController.cs): Add methods to Set, Get, and Clear Session and TempData.
-Step 3 (Views/Home/): Create the corresponding .cshtml views (SetSessionData, GetSessionData, SetTempData, GetTempData).
-Code:
-1. Startup.cs
-public void ConfigureServices(IServiceCollection services)
+patterns = pyfpgrowth.find_frequent_patterns(data, 2)
+print("Patterns:", patterns)
 
-{
 
-    services.AddSession(); // <-- ADD THIS
+Prac 12
 
-    services.AddControllersWithViews();
+import numpy as np
+import pandas as pd
+import pyfpgrowth
 
-}
+df = pd.read_csv("diabetes.csv")
 
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+baskets = pd.DataFrame({
+    "Glucose":  np.where(df["Glucose"] >= 126, "High_Glucose", "Normal_Glucose"),
+    "BMI":      np.where(df["BMI"] >= 25, "High_BMI", "Normal_BMI"),
+    "Age":      np.where(df["Age"] >= 40, "Age_40_plus", "Age_below_40"),
+    "Outcome":  np.where(df["Outcome"] == 1, "Diabetes", "No_Diabetes"),
+})
 
-{
+trans = baskets.values.tolist()
 
-    app.UseStaticFiles();
+print("Some Records:\n", *trans[:10], sep="\n")
 
-    app.UseRouting();
+patterns = pyfpgrowth.find_frequent_patterns(trans, 200)
+print("\nFrequent Patterns:\n", pd.Series(patterns))
 
-    app.UseSession(); // <-- ADD THIS (Before UseEndpoints)
-
-    app.UseEndpoints(endpoints =>
-
-    {
-
-        endpoints.MapControllerRoute(
-
-            name: "default",
-
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-
-    });
-
-}
-2. Controllers/HomeController.cs
-using Microsoft.AspNetCore.Http;
-
-using Microsoft.AspNetCore.Mvc;
-
-namespace YourProjectName.Controllers
-
-{
-
-    public class HomeController : Controller
-
-    {
-
-        public IActionResult Index() => View();
-
-        public IActionResult SetSessionData()
-
-        {
-
-            HttpContext.Session.SetString("Name", "Alex");
-
-            return View();
-
-        }
-
-        public IActionResult GetSessionData()
-
-        {
-
-            ViewBag.Msg = HttpContext.Session.GetString("Name") ?? "No Session Found";
-
-            return View();
-
-        }
-
-        public IActionResult ClearSession()
-
-        {
-
-            HttpContext.Session.Clear();
-
-            return RedirectToAction("GetSessionData");
-
-        }
-
-        public IActionResult SetTempData()
-
-        {
-
-            TempData["Msg"] = "Temporary Message (Disappears on refresh!)";
-
-            return View();
-
-        }
-
-        public IActionResult GetTempData() => View();
-
-    }
-
-}
-3. Views inside Views/Home/
-Index.cshtml<h1>Session & TempData Demo</h1>
-
-<a href="/Home/SetSessionData">1. Set Session</a> 
-
-<a href="/Home/GetSessionData">2. Get Session</a> 
-
-<a href="/Home/SetTempData">3. Set TempData</a> 
-
-<a href="/Home/GetTempData">4. Get TempData</a>
-
-SetSessionData.cshtml<h2>Session Saved!</h2>
-
-<a href="/Home/GetSessionData">View Session</a>
-
-GetSessionData.cshtmll<h2>User: @ViewBag.Msg</h2>
-<a href="/Home/ClearSession">Clear Session</a>
-
-
-
-SetTempData.cshtml<h2>TempData Saved!</h2>
-
-<a href="/Home/GetTempData">View TempData</a>
-
-GetTempData.cshtml<h2>TempData: @TempData["Msg"]</h2>
-
-<p>Refresh the page to see it disappear!</p>
-Practical 10: Entity Framework Core & CRUD Operations (Scaffolding)
-Part A: Setting Up Database & Migrations
-Steps to Do It:
-Create an ASP.NET Core Web Application (MVC) named EFCoreDemo.
-Open Package Manager Console (Tools -> NuGet Package Manager -> Package Manager Console) and install EF Core packages:
-
-Install-Package Microsoft.EntityFrameworkCore -Version 3.0.0
-
-Install-Package Microsoft.EntityFrameworkCore.SqlServer -Version 3.0.0
-
-Install-Package Microsoft.EntityFrameworkCore.Tools -Version 3.0.0
-
-Install-Package Microsoft.EntityFrameworkCore.Design -Version 3.0.0
-
-Create Model: Right-click Models -> Add -> Class -> Student.cs.
-Create DbContext: Create a folder Data -> Right-click Data -> Add -> Class -> AppDbContext.cs.
-Add Connection String: Edit appsettings.json.
-Register DbContext: Edit Startup.cs.
-Run Migrations: In Package Manager Console, run:
-
-Add-Migration InitialCreate
-
-Update-Database
-Code:
-1. Models/Student.cs
-using System.ComponentModel.DataAnnotations;
-
-namespace EFCoreDemo.Models
-
-{
-
-    public class Student
-
-    {
-
-        [Key]
-
-        public int Id { get; set; }
-
-        [Required, StringLength(50)]
-
-        public string Name { get; set; }
-
-        [Range(18, 60)]
-
-        public int Age { get; set; }
-
-    }
-
-}
-2. Data/AppDbContext.cs
-using Microsoft.EntityFrameworkCore;
-
-using EFCoreDemo.Models;
-
-namespace EFCoreDemo.Data
-
-{
-
-    public class AppDbContext : DbContext
-
-    {
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-        public DbSet<Student> Students { get; set; }
-
-    }
-
-}
-3. appsettings.json
-{
-
-  "ConnectionStrings": {
-
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=EFCoreDemoDB;Trusted_Connection=True;"
-
-  },
-
-  "AllowedHosts": "*"
-
-}
-4. Startup.cs (Inside ConfigureServices)
-public void ConfigureServices(IServiceCollection services)
-
-{
-
-    services.AddDbContext<AppDbContext>(options =>
-
-        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-    services.AddControllersWithViews();
-
-}
-
-Or in program.cs
-var builder = WebApplication.CreateBuilder(args);
-
-// --- ADD YOUR DATABASE SERVICE HERE ---
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-Part B: Auto-Generating CRUD Operations (Scaffolding)
-(Visual Studio generates this code automatically.)
-Steps to Do It:
-Right-click the Controllers folder -> Add -> New Scaffolded Item...
-Select MVC Controller with views, using Entity Framework -> Click Add.
-Fill in the dialog box:
-Model class: Student (EFCoreDemo.Models)
-Data context class: AppDbContext (EFCoreDemo.Data)
-Controller name: StudentsController
-Click Add (Visual Studio will generate StudentsController.cs and all Create, Edit, Details, Delete, and Index views).
-Run the project and navigate to https://localhost:xxxx/Students in your browser to test Create, Read, Update, and Delete!
-
-
-
-Console :- 
-Prime numbers:-
-Source code:-
-
-using System;
-
-class Program
-{
-    static void Main()
-    {
-        int n, i;
-        bool prime = true;
-
-        Console.Write("Enter a number: ");
-        n = Convert.ToInt32(Console.ReadLine());
-
-        if (n <= 1)
-            prime = false;
-        else
-        {
-            for (i = 2; i <= Math.Sqrt(n); i++)
-            {
-                if (n % i == 0)
-                {
-                    prime = false;
-                    break;
-                }
-            }
-        }
-
-        if (prime)
-            Console.WriteLine("Prime Number");
-        else
-            Console.WriteLine("Not a Prime Number");
-
-        Console.ReadLine();
-    }
-}
-
-#factorial
-
-using System;
-
-class Program
-{
-    static void Main()
-    {
-        int n, i;
-        int fact = 1;
-
-        Console.Write("Enter a number: ");
-        n = Convert.ToInt32(Console.ReadLine());
-
-        for (i = 1; i <= n; i++)
-        {
-            fact = fact * i;
-        }
-
-        Console.WriteLine("Factorial = " + fact);
-        Console.ReadLine();
-    }
-}
 
 
 
