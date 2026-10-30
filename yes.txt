@@ -397,6 +397,62 @@ for itemset, count in patterns.items():
     print(f"{', '.join(itemset)}: {count}")
 
 
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+
+# 1. Stratified Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# 2. Feature Scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 3. Base Estimators
+base_models = {
+    "DT": DecisionTreeClassifier(max_depth=5, random_state=42),
+    "NB": GaussianNB(),
+    "LR": LogisticRegression(max_iter=1000),
+    "SVM": SVC(probability=True, random_state=42)
+}
+
+# 4. Wrap Models inside Bagging Ensemble
+models = {}
+for name, base_model in base_models.items():
+    models[f"Bagged_{name}"] = BaggingClassifier(
+        estimator=base_model,
+        n_estimators=50,       # Number of bagged trees/models
+        max_samples=0.8,       # Train each model on 80% random samples
+        max_features=0.8,      # Train on 80% random features (feature bagging)
+        random_state=42,
+        n_jobs=-1
+    )
+
+# Note: RandomForest is already an optimized Bagged Decision Tree
+models["RF"] = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# 5. Loop & Evaluate
+for name, model in models.items():
+    model.fit(X_train_scaled, y_train)
+    y_pred = model.predict(X_test_scaled)
+    y_prob = model.predict_proba(X_test_scaled)[:, 1]
+    
+    # Calculate Metrics
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred, zero_division=0)
+    rec = recall_score(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+    spec = cm[0, 0] / (cm[0, 0] + cm[0, 1]) if (cm[0, 0] + cm[0, 1]) > 0 else 0
+
+    print(f"[{name}] Accuracy: {acc:.4f} | Precision: {prec:.4f} | Recall: {rec:.4f} | Specificity: {spec:.4f}")
 
 
 
