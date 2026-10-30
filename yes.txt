@@ -165,7 +165,7 @@ df = pd.read_csv("Suicide-rates-master.csv")
 # 1. Statistics & Skewness
 for col in df.select_dtypes(include=np.number).columns:
     mean, med, mode, skew = df[col].mean(), df[col].median(), df[col].mode()[0], df[col].skew()
-    interp = "Symmetric" if np.isclose(mean, med, atol=0.1) else ("Right-skewed" if skew > 0 else "Left-skewed")
+    interp = "Symmetric" if np.isclose(mean, med, atol=0.1) else ("Right-skewed" if skew > 0 else "Left-skewed")	
     print(f"{col} | Mean: {mean} | Med: {med} | Mode: {mode} | Skew: {skew} -> {interp}")
 
 # 2. Basic Plots
@@ -350,7 +350,7 @@ data = pd.read_csv("groceries.csv")
 basket = data["Items"].str.get_dummies(sep=", ").astype(bool)
 
 freq = apriori(basket, min_support=0.05, use_colnames=True)
-freq.nlargest(15, 'support').plot.bar(x='itemsets', y='support')
+freq.nlargest(15, 'support').plot.bar()
 plt.show()
 
 r = association_rules(freq, metric="lift", min_threshold=1.0)
@@ -364,11 +364,13 @@ Prac 11
 
 import pyfpgrowth, csv
 
-data = [[x for x in r if x] for r in csv.reader(open('Book1.csv'))][1:]
+data = [r.split(", ") for r in pd.read_csv("groceries.csv")["Items"]] 
 print("Some records:", data[:10])
 
 patterns = pyfpgrowth.find_frequent_patterns(data, 2)
 print("Patterns:", patterns)
+rules = pyfpgrowth.generate_association_rules(patterns, 0.7)
+print("rules output",rules)
 
 
 Prac 12
@@ -391,7 +393,10 @@ trans = baskets.values.tolist()
 print("Some Records:\n", *trans[:10], sep="\n")
 
 patterns = pyfpgrowth.find_frequent_patterns(trans, 200)
-print("\nFrequent Patterns:\n", pd.Series(patterns))
+for itemset, count in patterns.items():
+    print(f"{', '.join(itemset)}: {count}")
+
+
 
 
 
